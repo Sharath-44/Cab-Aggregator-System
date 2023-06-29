@@ -1,0 +1,9 @@
+1. friend function 
+2. namespace
+3. operator function
+4. conversion function
+5. static members
+6. deconstructor
+7. copy constructor
+8. templates
+9. initiakizer list
