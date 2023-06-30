@@ -6,11 +6,14 @@ using namespace std;
 
 class Payment
 {
-    private:
-        int amount;
-    public:
-        void payAmount(int amount)
-        {
-            
-        }
+private:
+    int balance;
+    bool isPaid;
+
+public:
+    Payment(int initialBalance);
+    void payAmount(int amount);
+    bool seePaid();
+    int makePayment(int balance, int amount);
+    int checkBalance(int balance, int amount);
 };

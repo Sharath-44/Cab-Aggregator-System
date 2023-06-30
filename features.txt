@@ -6,4 +6,4 @@
 6. deconstructor
 7. copy constructor
 8. templates
-9. initiakizer list
+9. initializer list

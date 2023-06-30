@@ -3,6 +3,7 @@
 #include <vector>
 #include "cab.h"
 #include "aggregator.h"
+#include "payment.h"
 
 using namespace std;
 
