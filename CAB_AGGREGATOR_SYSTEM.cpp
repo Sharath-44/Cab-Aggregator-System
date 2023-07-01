@@ -139,7 +139,7 @@ public:
                 accountBalance -= fare;
                 cout << "\nCab accepted the ride!" << endl;
                 cout << "Destination: " << destinationName << endl;
-                this_thread::sleep_for(chrono::seconds(1));
+                this_thread::sleep_for(chrono::seconds(2));
                 system("clear");
                 cout << "Ride in progress!" << endl;
                 this_thread::sleep_for(chrono::seconds(4));
