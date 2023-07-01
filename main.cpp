@@ -9,7 +9,7 @@ using namespace std;
 
 int main()
 {
-    cout << "------------Cab Aggregator System-------------" << endl;
+    cout << "------------Cab Aggregator System-------------\n" << endl;
     CabAggregator cabAggregator;
 
     cabAggregator.createCab(Cab("ABC123", "Raj"));
@@ -18,15 +18,15 @@ int main()
 
     cabAggregator.availableCab();
 
-    Payment payment(500); 
+    Payment payment(300); 
 
     string cabNumber = "ABC123";
     int fare = 200;
 
     cabAggregator.bookCab(cabNumber);
     payment.payAmount(fare);
-    payment.makePayment(payment.checkBalance(0, fare), fare);
-    cabAggregator.doneCab(cabNumber);
+    payment.makePayment(payment.checkBalance(0), fare);
+    cabAggregator.doneCab(cabNumber, payment.seePaid());
 
     cabAggregator.availableCab();
 

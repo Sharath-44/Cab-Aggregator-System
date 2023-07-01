@@ -16,7 +16,7 @@ class CabAggregator
         void createCab(Cab cab);
         void availableCab();
         void bookCab(string cabNumber);
-        void doneCab(string cabNumber);
+        void doneCab(string cabNumber, bool paid);
 };
 
 #endif

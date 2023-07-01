@@ -22,6 +22,7 @@ void CabAggregator::availableCab()
             cout << "Cab Number: " << cab.getCabNumber() << " Driver Name: " << cab.getDriverName() << endl;
         }
     }
+    cout << "\n";
 }
 
 void CabAggregator::bookCab(string cabNumber)
@@ -33,18 +34,24 @@ void CabAggregator::bookCab(string cabNumber)
             cab.setAvailable(false);
         }
     }
-    cout << "Cab " << cabNumber << " successfully booked!" << endl;
+    cout << "Cab " << cabNumber << " successfully booked!\n" << endl;
 }
 
-void CabAggregator::doneCab(string cabNumber)
+void CabAggregator::doneCab(string cabNumber, bool paid)
 {
     for(Cab &cab : cabs)
     {
-        if(cabNumber == cab.getCabNumber())
+        if(cabNumber == cab.getCabNumber() && paid)
         {
             cab.setAvailable(true);
+            cout << "Cab " << cabNumber << " trip successful and free!\n" << endl;
         }
+        // else
+        // {
+        //     //cab.setAvailable(false);
+        //     cout << "Fare not paid" << endl;
+        // }
     }
-    cout << "Cab " << cabNumber << " trip successful and free!" << endl;
+    
 }
 

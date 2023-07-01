@@ -9,20 +9,20 @@ Payment::Payment(int initialBalance) : balance(initialBalance), isPaid(false) {}
 
 void Payment::payAmount(int amount)
 {
-    cout << "Amount to be paid: " << amount << " rupees" << endl;
+    cout << "Amount to be paid: " << amount << " rupees\n" << endl;
     if (isPaid)
     {
-        cout << amount << " rupees paid. Thank you!" << endl;
+        cout << amount << " rupees paid. Thank you!\n" << endl;
     }
     else
     {
-        cout << amount << " rupees to be paid." << endl;
+        cout << amount << " rupees to be paid.\n" << endl;
     }
 }
 
-int Payment::checkBalance(int balance, int amount)
+int Payment::checkBalance(int balance)
 {
-    cout << "Balance: " << this->balance << " rupees." << endl;
+    cout << "Balance: " << this->balance << " rupees.\n" << endl;
     return this->balance;
 }
 
@@ -35,15 +35,15 @@ int Payment::makePayment(int balance, int amount)
 {
     if (this->balance < amount)
     {
-        cout << "Balance " << this->balance << " rupees. Balance low! Please recharge!" << endl;
+        cout << "Balance " << this->balance << " rupees. Balance low! Please recharge!\n" << endl;
         return this->balance;
     }
     else
     {
         this->balance -= amount;
         isPaid = true;
-        cout << amount << " rupees paid. Thank you!" << endl;
-        cout << "Balance: " << this->balance << " rupees." << endl;
+        cout << amount << " rupees paid. Thank you!\n" << endl;
+        cout << "Balance: " << this->balance << " rupees.\n" << endl;
         return this->balance;
     }
 }
