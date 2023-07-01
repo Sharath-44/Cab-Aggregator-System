@@ -6,19 +6,15 @@
 #include <random>
 #include <chrono>
 #include <thread>
+#include <cctype>
 #include <map>
 #include<algorithm>
 
 using namespace std;
 
-// Forward declaration of classes
 class Cab;
 class User;
-
-// Global variables
-vector<Cab> cabs; // Vector to store cab details
-
-// Structure to store destination coordinates
+vector<Cab> cabs; 
 struct Coordinates {
     double x;
     double y;
@@ -51,7 +47,6 @@ public:
     bool available;
 
 public:
-    // Constructor
     Cab(const string& name, const string& model, const string& number, double xCoord, double yCoord)
         : driverName(name), carModel(model), carNumber(number), x(xCoord), y(yCoord), available(true) {}
 
@@ -72,7 +67,6 @@ public:
 
     // Function to randomly accept or reject user request
     bool acceptRide() {
-        // Random number generator
         random_device rd;
         mt19937 gen(rd());
         uniform_int_distribution<> dis(0, 1);
@@ -89,7 +83,6 @@ public:
         uniform_real_distribution<> disX(userX - 5, userX + 5);
         uniform_real_distribution<> disY(userY - 5, userY + 5);
 
-        // Update the cab's position not by more than 5 units
         x = disX(gen);
         y = disY(gen);
 
@@ -101,14 +94,12 @@ public:
     friend void bookCab(User& user);
 };
 
-// Class representing a User
 class User {
 public:
     string name;
     double accountBalance;
 
 public:
-    // Constructor
     User(const string& userName, double balance)
         : name(userName), accountBalance(balance) {}
 
@@ -153,21 +144,20 @@ public:
                 double fare = 40 + (calculateDistance(startX, startY, destinationCoords.x, destinationCoords.y) - 0.5) + 500;
 
                 // double fare = calculateDistance(startX, startY, destinationCoords.x, destinationCoords.y) * 10;
-
-                // Update user's account balance
                 accountBalance -= fare;
-
                 cout << "\nCab accepted the ride!" << endl;
                 cout << "Destination: " << destinationName << endl;
                 this_thread::sleep_for(chrono::seconds(1));
-
+                system("clear");
+                cout << "Ride in progress!" << endl;
+                this_thread::sleep_for(chrono::seconds(4));
                 cout << "Fare: " << fare << endl;
                 cout << "Updated Account Balance: " << accountBalance << endl;
+                cout << "Thank you for using our service! We look forward to serving you again!"<<endl;
             } else {
                 cout << "\n\nCab rejected the ride, trying again." << endl;
                 // Remove the rejected cab from consideration
                 nearestCab->setAvailability(false);
-                // Try again with the next cab
                 bookCab(startX, startY, destinationName);
             }
         } else {
@@ -209,13 +199,13 @@ int main() {
     // User sign-up
     string userName;
     double accountBalance;
-    cout << "Sign up for the Cab Booking Simulator\n\n" << endl;
+    cout << "********Sign up for the Cab Booking Simulator**********\n\n" << endl;
     cout << "Enter your name: ";
-    //handle invalid input for name it should not be a number
-    while (!(cin >> userName && userName.length() > 0 ) && !isdigit(userName[0]) ) {
-        cout << "Invalid input. Please enter a valid string Username: ";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+     while (!(std::getline(std::cin, userName)) ||
+           !std::all_of(userName.begin(), userName.end(), [](char c) { return std::isalpha(c) || std::isspace(c); })) {
+        std::cout << "\nInvalid input. Please enter a valid name (alphabets only): \n";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     fflush(stdin);
     cout << "Enter your account balance: ";
@@ -224,11 +214,7 @@ int main() {
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
-
-    // Create user object
     User user(userName, accountBalance);
-
-    // Get user's starting coordinates
     double startX, startY;
     cout << "Enter your current coordinates (x, y): ";
     //handle invalid input
@@ -237,13 +223,10 @@ int main() {
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
-    //print the destinations available
     cout << "Destinations available: " << endl;
     for (auto& destination : destinations) {
         cout << destination.first << endl;
     }
-
-    // Get destination name
     string destinationName;
     cout << "Enter your destination name: ";
     //if the destination is not in the map, ask the user to enter a valid destination name check if fare exceeds balance and if it does, display a message and try again
@@ -263,8 +246,11 @@ int main() {
         //update account balance
         user.accountBalance = accountBalance;
     }
+    //store all user information to a csv file and if the user exists 
+    {
+        //
+    }
 
-    // Display user details and ride information
     cout << endl;
     cout << "User Details:" << endl;
     cout << "-------------" << endl;
@@ -276,6 +262,22 @@ int main() {
     cout << "Start Location: (" << startX << ", " << startY << ")" << endl;
     cout << "Destination: " << destinationName << endl;
     cout << "Fare Calculation: 40 Rs. for the first 0.5 + 100 Rs./unit" << endl;
+    // display the distance between the user and the destination
+    cout << "Distance: " << calculateDistance(startX, startY, destinations[destinationName].x, destinations[destinationName].y) << " units" << endl;
+    cout << "Estimated Fare: " << fare << endl;
+    //ask if the user wants to proceed with the booking
+    cout << "Do you want to proceed with the booking? (y/n): ";
+    char proceed;
+    while (!(cin >> proceed) || (proceed != 'y' && proceed != 'n')) {
+        cout << "Invalid input. Please enter y/n: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    if (proceed == 'n') {
+        cout << "Booking cancelled. Exiting program..." << endl;
+        return 0;
+    }
+    cout << "Booking confirmed. Finding cabs..." << endl;
     cout << endl;
 
     // Simulate live cab positions for 10 seconds and change the positions every 3 seconds
@@ -285,19 +287,13 @@ int main() {
         for (Cab& cab : cabs) {
             cab.updatePosition(startX, startY);
         }
-
         // Display live cab positions
-        system("clear"); // Clear terminal screen (for Unix/Linux)
-        // system("cls"); // Clear terminal screen (for Windows)
+        system("clear"); 
         displayCabPositions();
 
-        // Wait for some time before updating positions again
-        this_thread::sleep_for(chrono::seconds(1));
+        this_thread::sleep_for(chrono::seconds(2));
     }
-
-    // Book a cab
+    system("clear");
     user.bookCab(startX, startY, destinationName);
-
     return 0;
 }
-
