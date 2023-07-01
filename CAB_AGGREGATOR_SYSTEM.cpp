@@ -10,6 +10,8 @@
 #include <cctype>
 #include <map>
 #include <algorithm>
+#include <cstdlib>
+#include <cstring>
 
 using namespace std;
 
@@ -21,12 +23,15 @@ struct Coordinates {
     double y;
 };
 
-map<string, Coordinates> destinations = {
-    {"mysore", {100, 200}},
-    {"airport", {1000, 400}},
-    {"market", {200, 400}},
-    {"store", {50, 40}}
-};
+// map<string, Coordinates> destinations = {
+//     {"mysore", {100, 200}},
+//     {"airport", {1000, 400}},
+//     {"market", {200, 400}},
+//     {"store", {50, 40}}
+// };
+// To set as environment variables during program execution
+const char *dests[4] = {"mysore", "airport", "market", "store"};
+const char *coords[4] = {"100 200", "1000 400", "200 400", "50 40"};
 
 double calculateDistance(double x1, double y1, double x2, double y2) {
     return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
@@ -37,6 +42,30 @@ string toLowercase(const string& str) {
     transform(lowercaseStr.begin(), lowercaseStr.end(), lowercaseStr.begin(), ::tolower);
     return lowercaseStr;
 }
+
+char* toLowercaseCstyle(char *str) {
+    for (char *p=str; *p; p++) *p = tolower(*p);
+    return str;
+}
+
+Coordinates getCoordinates(std::string destinationName)
+{   
+    char *destCoord;
+    int xcoord, ycoord;
+    std::string del;
+    Coordinates coords;
+
+    char temp[32];
+    strcpy(temp, toLowercase(destinationName).c_str());
+    destCoord = getenv(temp); // string
+    istringstream str(destCoord);
+    getline(str, del, ' ');
+    coords.x = stoi(del);
+    getline(str, del, ' ');
+    coords.y = stoi(del);
+    return coords;
+}
+
 
 class Cab {
 public:
@@ -130,7 +159,9 @@ public:
 
                 // Get the destination coordinates from the map
                 string lowercaseDestination = toLowercase(destinationName);
-                Coordinates destinationCoords = destinations[lowercaseDestination];
+
+                // Coordinates destinationCoords = destinations[lowercaseDestination];
+                Coordinates destinationCoords = getCoordinates(lowercaseDestination);
 
                 // Calculate fare based on distance. for the first 0.5 units, fare is 40. for every additional unit, fare is 100
                 double fare = 40 + (calculateDistance(startX, startY, destinationCoords.x, destinationCoords.y) - 0.5) + 500;
@@ -212,6 +243,11 @@ vector<string> split(const string &s, char delimiter)
     return tokens;
 }
 int main() {
+    // Setting destinations and their coords during env vars
+    for (int i = 0; i < 4; i++) {
+        setenv(dests[i], coords[i], 0);
+    }
+
     cabs_.push_back(Cab("Samuel", "Sedan", "ABC123", 1, 1));
     cabs_.push_back(Cab("Sriram", "Nano", "DEF456", 2, 2));
     cabs_.push_back(Cab("Murali", "SUV", "GHI789", 3, 3));
@@ -254,7 +290,6 @@ int main() {
     else
     {
         cout << "Welcome " << userName << "!" << endl;
-        cout << "Your account balance is: " << accountBalance << endl;
         fflush(stdin);
         cout << "Enter your account balance: ";
         while (!(cin >> accountBalance && accountBalance > 500)) {
@@ -276,25 +311,31 @@ int main() {
     }
 
     cout << "Destinations available: " << endl;
-    for (auto& destination : destinations) {
-        cout << destination.first << endl;
+    for (auto& dest : dests) {
+        cout << dest << endl;
     }
     string destinationName;
+    char destName[32];
     cout << "Enter your destination name: ";
     //if the destination is not in the map, ask the user to enter a valid destination name check if fare exceeds balance and if it does, display a message and try again
-    while (!(cin >> destinationName) || destinations.find(toLowercase(destinationName)) == destinations.end()) {
+    while (!(cin >> destName) \
+    || getenv(toLowercaseCstyle(destName)) == NULL) {
         cout << "Invalid input. Please enter a valid destination name: ";
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
+
+    destinationName = destName; // get string of type string, not char*
+
+    Coordinates destCoords = getCoordinates(destinationName);
     //check if the fare exceeds the balance
-    double fare = 40 + (calculateDistance(startX, startY, destinations[destinationName].x, destinations[destinationName].y) - 0.5) + 500;
+    double fare = 40 + (calculateDistance(startX, startY, destCoords.x, destCoords.y) - 0.5) + 500;
     while (fare > accountBalance) {
         cout << "Your account balance is insufficient to book a cab to this destination\n. Please enter a greater balance amount: ";
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cin >> accountBalance;
-        fare = 40 + (calculateDistance(startX, startY, destinations[destinationName].x, destinations[destinationName].y) - 0.5) + 100;
+        fare = 40 + (calculateDistance(startX, startY, destCoords.x, destCoords.y) - 0.5) + 100;
         //update account balance
         user.accountBalance = accountBalance;
     }
@@ -311,7 +352,7 @@ int main() {
     cout << "Destination: " << destinationName << endl;
     cout << "Fare Calculation: 40 Rs. for the first 0.5 + 100 Rs./unit" << endl;
     // display the distance between the user and the destination
-    cout << "Distance: " << calculateDistance(startX, startY, destinations[destinationName].x, destinations[destinationName].y) << " units" << endl;
+    cout << "Distance: " << calculateDistance(startX, startY, destCoords.x, destCoords.y) << " units" << endl;
     cout << "Estimated Fare: " << fare << endl;
     cout << "Do you want to proceed with the booking? (y/n): ";
     char proceed;
