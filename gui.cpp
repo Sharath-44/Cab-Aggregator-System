@@ -16,7 +16,7 @@ class Cab;
 class User;
 
 // Global variables
-vector<Cab> cabs; // Vector to store cab details
+vector<Cab> cabs_; // Vector to store cab details
 
 // Structure to store destination coordinates
 struct Coordinates {
@@ -120,7 +120,7 @@ public:
         // Find the nearest available cab
         double minDistance = -1;
         Cab* nearestCab = nullptr;
-        for (Cab& cab : cabs) {
+        for (Cab& cab : cabs_) {
             if (cab.isAvailable()) {
                 double distance = cab.getDistance(startX, startY);
                 if (minDistance == -1 || distance < minDistance) {
@@ -187,7 +187,7 @@ void displayCabsAndUser(double userX, double userY) {
 
     // Create a rectangle for each cab
     vector<sf::RectangleShape> cabRectangles;
-    for (const Cab& cab : cabs) {
+    for (const Cab& cab : cabs_) {
         sf::RectangleShape cabRectangle(sf::Vector2f(20, 20));
         cabRectangle.setFillColor(sf::Color::Green);
         cabRectangle.setPosition(cab.x * 100, cab.y * 100);
@@ -243,7 +243,7 @@ void displayCabPositions() {
 
 
     // Display cab positions in the table
-    for (const Cab& cab : cabs) {
+    for (const Cab& cab : cabs_) {
         cout << setw(10) << left << cab.driverName
              << setw(10) << left << cab.carModel
              << "(" << setw(2) << right << cab.x << ", " << setw(2) << right << cab.y << ")" << endl;
@@ -255,11 +255,11 @@ void displayCabPositions() {
 
 int main() {
     // Create and store cab details
-    cabs.push_back(Cab("Samuel", "Sedan", "ABC123", 1, 1));
-    cabs.push_back(Cab("Sriram", "Nano", "DEF456", 2, 2));
-    cabs.push_back(Cab("Murali", "SUV", "GHI789", 3, 3));
-    cabs.push_back(Cab("Anirudh", "Sedan", "JKL012", 4, 4));
-    cabs.push_back(Cab("Shreyas", "Sedan", "MNO345", 5, 5));
+    cabs_.push_back(Cab("Samuel", "Sedan", "ABC123", 1, 1));
+    cabs_.push_back(Cab("Sriram", "Nano", "DEF456", 2, 2));
+    cabs_.push_back(Cab("Murali", "SUV", "GHI789", 3, 3));
+    cabs_.push_back(Cab("Anirudh", "Sedan", "JKL012", 4, 4));
+    cabs_.push_back(Cab("Shreyas", "Sedan", "MNO345", 5, 5));
 
     // User sign-up
     string userName;
@@ -336,7 +336,7 @@ int main() {
     time_t startTime = time(nullptr);
     while (time(nullptr) - startTime < 10) {
         this_thread::sleep_for(chrono::seconds(2));
-        for (Cab& cab : cabs) {
+        for (Cab& cab : cabs_) {
             cab.updatePosition(startX, startY);
         }
 

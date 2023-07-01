@@ -8,13 +8,13 @@
 #include <thread>
 #include <cctype>
 #include <map>
-#include<algorithm>
+#include <algorithm>
 
 using namespace std;
 
 class Cab;
 class User;
-vector<Cab> cabs; 
+vector<Cab> cabs_; 
 struct Coordinates {
     double x;
     double y;
@@ -111,7 +111,7 @@ public:
         // Find the nearest available cab
         double minDistance = -1;
         Cab* nearestCab = nullptr;
-        for (Cab& cab : cabs) {
+        for (Cab& cab : cabs_) {
             if (cab.isAvailable()) {
                 double distance = cab.getDistance(startX, startY);
                 if (minDistance == -1 || distance < minDistance) {
@@ -178,7 +178,7 @@ void displayCabPositions() {
          << setw(10) << left << "--------" << endl;
 
     // Display cab positions in the table
-    for (const Cab& cab : cabs) {
+    for (const Cab& cab : cabs_) {
         cout << setw(10) << left << cab.driverName
              << setw(10) << left << cab.carModel
              << "(" << setw(2) << right << cab.x << ", " << setw(2) << right << cab.y << ")" << endl;
@@ -186,15 +186,35 @@ void displayCabPositions() {
     cout << endl;
 }
 
-
+void storeUserDataCSV(const string &username, double initialBalance, double balanceAfterRide)
+{
+    try
+    {
+        ofstream file("userdata.csv", ios::app);
+        if (file.is_open())
+        {
+            file << username << "," << initialBalance << "," << balanceAfterRide << "\n";
+            file.close();
+            cout << "User data stored successfully in userdata.csv" << endl;
+        }
+        else
+        {
+            throw "Error opening the file userdata.csv";
+        }
+    }
+    catch (const char *errorMessage)
+    {
+        cout << errorMessage << endl;
+    }
+}
 
 int main() {
     // Create and store cab details
-    cabs.push_back(Cab("Samuel", "Sedan", "ABC123", 1, 1));
-    cabs.push_back(Cab("Sriram", "Nano", "DEF456", 2, 2));
-    cabs.push_back(Cab("Murali", "SUV", "GHI789", 3, 3));
-    cabs.push_back(Cab("Anirudh", "Sedan", "JKL012", 4, 4));
-    cabs.push_back(Cab("Shreyas", "Sedan", "MNO345", 5, 5));
+    cabs_.push_back(Cab("Samuel", "Sedan", "ABC123", 1, 1));
+    cabs_.push_back(Cab("Sriram", "Nano", "DEF456", 2, 2));
+    cabs_.push_back(Cab("Murali", "SUV", "GHI789", 3, 3));
+    cabs_.push_back(Cab("Anirudh", "Sedan", "JKL012", 4, 4));
+    cabs_.push_back(Cab("Shreyas", "Sedan", "MNO345", 5, 5));
 
     // User sign-up
     string userName;
@@ -284,7 +304,7 @@ int main() {
     time_t startTime = time(nullptr);
     while (time(nullptr) - startTime < 10) {
         this_thread::sleep_for(chrono::seconds(2));
-        for (Cab& cab : cabs) {
+        for (Cab& cab : cabs_) {
             cab.updatePosition(startX, startY);
         }
         // Display live cab positions
@@ -295,5 +315,6 @@ int main() {
     }
     system("clear");
     user.bookCab(startX, startY, destinationName);
+    storeUserDataCSV(userName, accountBalance, accountBalance - fare);
     return 0;
 }
