@@ -6,6 +6,7 @@
 #include <random>
 #include <chrono>
 #include <thread>
+#include <string>
 #include <cctype>
 #include <map>
 #include <algorithm>
@@ -198,6 +199,18 @@ void storeUserDataCSV(const string &username, double initialBalance, double bala
     }
 }
 
+// split function 
+vector<string> split(const string &s, char delimiter)
+{
+    vector<string> tokens;
+    string token;
+    istringstream tokenStream(s);
+    while (getline(tokenStream, token, delimiter))
+    {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
 int main() {
     cabs_.push_back(Cab("Samuel", "Sedan", "ABC123", 1, 1));
     cabs_.push_back(Cab("Sriram", "Nano", "DEF456", 2, 2));
@@ -208,20 +221,49 @@ int main() {
     string userName;
     double accountBalance;
     cout << "********Sign up for the Cab Booking Simulator**********\n\n" << endl;
+    //check if the user already exists in the userdata.csv file and if yes, then retrieve the balance
     cout << "Enter your name: ";
-     while (!(std::getline(std::cin, userName)) ||
+    while (!(std::getline(std::cin, userName)) ||
            !std::all_of(userName.begin(), userName.end(), [](char c) { return std::isalpha(c) || std::isspace(c); })) {
         std::cout << "\nInvalid input. Please enter a valid name (alphabets only): \n";
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
-    fflush(stdin);
-    cout << "Enter your account balance: ";
-    while (!(cin >> accountBalance && accountBalance > 500)) {
-        cout << "Invalid input. Please enter a valid amount/value for your balance: ";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    ifstream file("userdata.csv");
+    string line;
+    bool userExists = false;
+    if (file.is_open())
+    {
+        while (getline(file, line))
+        {
+            vector<string> userData = split(line, ',');
+            if (userData[0] == userName)
+            {
+                userExists = true;
+                accountBalance = stod(userData[2]);
+                break;
+            }
+        }
+        file.close();
     }
+    if (userExists)
+    {
+        cout << "Welcome back " << userName << "!" << endl;
+        cout << "Your account balance is: " << accountBalance << endl;
+    }
+    else
+    {
+        cout << "Welcome " << userName << "!" << endl;
+        cout << "Your account balance is: " << accountBalance << endl;
+        fflush(stdin);
+        cout << "Enter your account balance: ";
+        while (!(cin >> accountBalance && accountBalance > 500)) {
+            cout << "Invalid input. Please enter a valid amount/value for your balance: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
     User user(userName, accountBalance);
     double startX, startY;
     cout << "Enter your current coordinates (x, y): ";
