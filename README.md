@@ -24,7 +24,7 @@ The Cab Booking Simulator is a command-line application written in C++. It simul
 ## Usage
 
 1. Clone the repository: `git clone <repository-url>`
-2. Compile the code: `g++ -o cab_booking_simulator main.cpp`
+2. Compile the code: `g++ -o cab_booking_simulator CAB_AGGREGATOR_SYSTEM.cpp`
 3. Run the application: `./cab_booking_simulator`
 
 ## more changes
