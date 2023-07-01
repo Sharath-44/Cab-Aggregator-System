@@ -50,22 +50,16 @@ public:
     Cab(const string& name, const string& model, const string& number, double xCoord, double yCoord)
         : driverName(name), carModel(model), carNumber(number), x(xCoord), y(yCoord), available(true) {}
 
-    // Function to get cab's availability status
     bool isAvailable() {
         return available;
     }
-
-    // Function to set cab's availability status
     void setAvailability(bool status) {
         available = status;
     }
-
-    // Function to get cab's distance from user's location
     double getDistance(double userX, double userY) {
         return calculateDistance(x, y, userX, userY);
     }
 
-    // Function to randomly accept or reject user request
     bool acceptRide() {
         random_device rd;
         mt19937 gen(rd());
@@ -75,7 +69,7 @@ public:
         return dis(gen) == 1;
     }
 
-    // Function to update cab's position randomly around the user's location
+    // UpdateS cab's position randomly around the user's location
     void updatePosition(double userX, double userY) {
         // Random number generator
         random_device rd;
@@ -89,8 +83,6 @@ public:
         // Sleep for 1 second
         this_thread::sleep_for(chrono::seconds(1));
     }
-
-    // Friend function to access private members of Cab class
     friend void bookCab(User& user);
 };
 
@@ -103,7 +95,6 @@ public:
     User(const string& userName, double balance)
         : name(userName), accountBalance(balance) {}
 
-    // Function to book a cab
     void bookCab(double startX, double startY, const string& destinationName) {
         cout << "\nBooking a cab for " << name << endl;
         cout << "\nInitial Account Balance: " << accountBalance << endl;
@@ -129,7 +120,7 @@ public:
             cout << "Car Number: " << nearestCab->carNumber << endl;
             cout << "Distance from user: " << minDistance << endl;
 
-            // Wait for some time to simulate the cab's response time
+            // Wait for some time
             this_thread::sleep_for(chrono::seconds(2));
 
             // Check if the cab accepts the ride
@@ -166,7 +157,6 @@ public:
     }
 };
 
-// Function to display live table of cab positions
 void displayCabPositions() {
     cout << "Live Cab Positions:" << endl;
     cout << "-------------------" << endl;
@@ -209,14 +199,12 @@ void storeUserDataCSV(const string &username, double initialBalance, double bala
 }
 
 int main() {
-    // Create and store cab details
     cabs_.push_back(Cab("Samuel", "Sedan", "ABC123", 1, 1));
     cabs_.push_back(Cab("Sriram", "Nano", "DEF456", 2, 2));
     cabs_.push_back(Cab("Murali", "SUV", "GHI789", 3, 3));
     cabs_.push_back(Cab("Anirudh", "Sedan", "JKL012", 4, 4));
     cabs_.push_back(Cab("Shreyas", "Sedan", "MNO345", 5, 5));
 
-    // User sign-up
     string userName;
     double accountBalance;
     cout << "********Sign up for the Cab Booking Simulator**********\n\n" << endl;
@@ -237,12 +225,14 @@ int main() {
     User user(userName, accountBalance);
     double startX, startY;
     cout << "Enter your current coordinates (x, y): ";
+
     //handle invalid input
     while (!(cin >> startX >> startY)) {
         cout << "Invalid input. Please enter a valid coordinate pair (x, y): ";
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
+
     cout << "Destinations available: " << endl;
     for (auto& destination : destinations) {
         cout << destination.first << endl;
@@ -266,10 +256,6 @@ int main() {
         //update account balance
         user.accountBalance = accountBalance;
     }
-    //store all user information to a csv file and if the user exists 
-    {
-        //
-    }
 
     cout << endl;
     cout << "User Details:" << endl;
@@ -285,7 +271,6 @@ int main() {
     // display the distance between the user and the destination
     cout << "Distance: " << calculateDistance(startX, startY, destinations[destinationName].x, destinations[destinationName].y) << " units" << endl;
     cout << "Estimated Fare: " << fare << endl;
-    //ask if the user wants to proceed with the booking
     cout << "Do you want to proceed with the booking? (y/n): ";
     char proceed;
     while (!(cin >> proceed) || (proceed != 'y' && proceed != 'n')) {
