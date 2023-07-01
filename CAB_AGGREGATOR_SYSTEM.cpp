@@ -208,6 +208,7 @@ void displayCabPositions() {
     cout << endl;
 }
 
+/*
 void storeUserDataCSV(const string &username, double initialBalance, double balanceAfterRide)
 {
     try
@@ -229,6 +230,197 @@ void storeUserDataCSV(const string &username, double initialBalance, double bala
         cout << errorMessage << endl;
     }
 }
+*/
+/** MAIN 
+void storeUserDataCSV(const string &username, bool userExists, double initialBalance, double balanceAfterRide)
+{
+    if (!userExists) {
+        try
+        {
+            ofstream file("userdata.csv", ios::app);
+            if (file.is_open())
+            {
+                file << username << "," << initialBalance << "," << balanceAfterRide << "\n";
+                file.close();
+                cout << "User data stored successfully in userdata.csv" << endl;
+            }
+            else
+            {
+                throw "Error opening the file userdata.csv";
+            }
+        }
+        catch (const char *errorMessage)
+        {
+            cout << errorMessage << endl;
+        }
+    }
+    else {
+        try {
+            ofstream file("newuserdata.csv", ios::out | ios::app);
+            if (file.is_open())
+            {
+                ifstream readFile("userdata.csv", ios::in);
+                string csvLine, csvWord, user;
+                vector<string> lines;
+                while (getline(readFile, csvLine, '\n')) {
+                    stringstream str(csvLine);
+                    getline(str, user, ',');
+                    if (user == username) {
+                        lines.push_back(username + "," + to_string(initialBalance) \
+                            + "," + to_string(balanceAfterRide));
+                    }
+                    else {
+                        lines.push_back(csvLine);
+                    }
+                }
+                readFile.close();
+
+                for (vector<string>::iterator i=lines.begin(); i != lines.end(); i++) {
+                    file << *i << '\n';
+                }
+                file.close();
+            }
+            try {
+                if (remove("userdata.csv") == 0) {
+                    try {
+                        if (rename("newuserdata.csv", "userdata.csv") == 0) {
+                            cout << "User data stored successfully in userdata.csv" << endl;
+                        }
+                        else {
+                            throw "An error occurred in updating the data.";
+                        }
+                    }
+                    catch (string errMsg) { cout << errMsg << endl; }
+                }
+                else {
+                    throw "An error occurred in updating the data.";
+                }
+            }
+            catch (string errMsg) { cout << errMsg << endl; }
+        }
+        catch (...) { cout << "An error occurred in accessing the database." << endl; }
+    }
+}
+*/
+void storeUserDataCSV(const string &username, bool userExists, double accountBalance)
+{
+    if (!userExists) {
+        try
+        {
+            ofstream file("userdata.csv", ios::app);
+            if (file.is_open())
+            {
+                file << username << "," << accountBalance << "\n";
+                file.close();
+                cout << "User data stored successfully in userdata.csv" << endl;
+            }
+            else
+            {
+                throw "Error opening the file userdata.csv";
+            }
+        }
+        catch (const char *errorMessage)
+        {
+            cout << errorMessage << endl;
+        }
+    }
+    else {
+        try {
+            ofstream file("newuserdata.csv", ios::out | ios::app);
+            if (file.is_open())
+            {
+                ifstream readFile("userdata.csv", ios::in);
+                string csvLine, csvWord, user;
+                vector<string> lines;
+                while (getline(readFile, csvLine, '\n')) {
+                    stringstream str(csvLine);
+                    getline(str, user, ',');
+                    if (user == username) {
+                        stringstream tmp;
+                        tmp << setprecision(2) << fixed << accountBalance;
+                        lines.push_back(username + "," + tmp.str());
+                        tmp.str(string());
+                    }
+                    else {
+                        lines.push_back(csvLine);
+                    }
+                }
+                readFile.close();
+
+                for (vector<string>::iterator i=lines.begin(); i != lines.end(); i++) {
+                    file << *i << '\n';
+                }
+                file.close();
+            }
+            try {
+                if (remove("userdata.csv") == 0) {
+                    try {
+                        if (rename("newuserdata.csv", "userdata.csv") == 0) {
+                            cout << "User data stored successfully in userdata.csv" << endl;
+                        }
+                        else {
+                            throw "An error occurred in updating the data.";
+                        }
+                    }
+                    catch (string errMsg) { cout << errMsg << endl; }
+                }
+                else {
+                    throw "An error occurred in updating the data.";
+                }
+            }
+            catch (string errMsg) { cout << errMsg << endl; }
+        }
+        catch (...) { cout << "An error occurred in accessing the database." << endl; }
+    }
+}
+/*
+void storeUserDataCSV(const string &username, double initialBalance, double balanceAfterRide)
+{
+    try
+    {
+        ofstream file("newuserdata.csv", ios::app);
+        if (file.is_open())
+        {
+            ifstream readFile("userdata.csv", ios::in);
+            string csvLine, csvWord;
+            vector<string> line;
+            vector<vector<string>> contents;
+            while (getline(readFile, csvLine, '\n')) {
+                stringstream str(csvLine);
+                while (getline(str, csvWord, ',')) {
+                    line.push_back(csvWord);
+                }
+                contents.push_back(line);
+            }
+            readFile.close();
+
+            // vector<vector<string>>::iterator i;
+            // vector<string>::iterator j;
+            for (int i = 0; i < contents.size(); i++) {
+                if (contents[i][0] == username) {
+                    contents[i][1] = initialBalance;
+                    contents[i][2] = balanceAfterRide;
+                }
+                file << contents[i][0] << ',' << contents[i][1] << ',' << contents[i][2] << '\n';
+            }
+            file.close();
+
+            if (remove("userdata.csv") == 0) {
+                rename("newuserdata.csv", "userdata.csv");
+            }
+            cout << "User data stored successfully in userdata.csv" << endl;
+        }
+        else
+        {
+            throw "Error opening the file userdata.csv";
+        }
+    }
+    catch (const char *errorMessage)
+    {
+        cout << errorMessage << endl;
+    }
+}
+*/
 
 // split function 
 vector<string> split(const string &s, char delimiter)
@@ -276,7 +468,7 @@ int main() {
             if (userData[0] == userName)
             {
                 userExists = true;
-                accountBalance = stod(userData[2]);
+                accountBalance = stod(userData[1]);
                 break;
             }
         }
@@ -331,7 +523,7 @@ int main() {
     //check if the fare exceeds the balance
     double fare = 40 + (calculateDistance(startX, startY, destCoords.x, destCoords.y) - 0.5) + 500;
     while (fare > accountBalance) {
-        cout << "Your account balance is insufficient to book a cab to this destination\n. Please enter a greater balance amount: ";
+        cout << "Your account balance is insufficient to book a cab to this destination.\nPlease enter a greater balance amount: ";
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cin >> accountBalance;
@@ -383,6 +575,7 @@ int main() {
     }
     system("clear");
     user.bookCab(startX, startY, destinationName);
-    storeUserDataCSV(userName, accountBalance, accountBalance - fare);
+    // storeUserDataCSV(userName, userExists, accountBalance, accountBalance - fare);
+    storeUserDataCSV(userName, userExists, accountBalance - fare);
     return 0;
 }
